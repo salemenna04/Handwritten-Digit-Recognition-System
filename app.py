@@ -23,12 +23,15 @@ def preprocess(image):
     image = image / 255.0
     image = image.reshape(1,28,28,1)
 
-    return imageif uploaded_file is not None:
+    return image
+
+uploaded_file = st.file_uploader("Upload image", type=["png","jpg","jpeg"])
+
+if uploaded_file is not None:
     img = Image.open(uploaded_file)
-    st.image(img, caption="Uploaded Image", use_column_width=True)
+    st.image(img)
 
-    processed = preprocess_image(img)
+    processed = preprocess(img)
     prediction = model.predict(processed)
-    digit = np.argmax(prediction)
 
-    st.success(f"Predicted Digit: {digit}")
+    st.success(f"Predicted Digit: {np.argmax(prediction)}")
