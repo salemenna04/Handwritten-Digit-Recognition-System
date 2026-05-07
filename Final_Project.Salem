@@ -1,0 +1,350 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/salemenna04/Handwritten-Digit-Recognition-System/blob/main/Final_Project.Salem\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "project_path = \"/content/Handwritten-Digit-Recognition-System\"\n",
+        "os.makedirs(project_path, exist_ok=True)\n",
+        "project_path"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 35
+        },
+        "id": "s7wx_IO1jWbV",
+        "outputId": "74d99b8c-e5f3-4d4b-d2f8-2b67a3f67a1d"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'/content/Handwritten-Digit-Recognition-System'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 1
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_code = \"\"\"\n",
+        "import tensorflow as tf\n",
+        "from tensorflow.keras import layers, models\n",
+        "from tensorflow.keras.datasets import mnist\n",
+        "\n",
+        "(x_train, y_train), (x_test, y_test) = mnist.load_data()\n",
+        "\n",
+        "x_train = x_train / 255.0\n",
+        "x_test = x_test / 255.0\n",
+        "\n",
+        "x_train = x_train.reshape(-1,28,28,1)\n",
+        "x_test = x_test.reshape(-1,28,28,1)\n",
+        "\n",
+        "model = models.Sequential([\n",
+        "    layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),\n",
+        "    layers.MaxPooling2D((2,2)),\n",
+        "    layers.Conv2D(64, (3,3), activation='relu'),\n",
+        "    layers.MaxPooling2D((2,2)),\n",
+        "    layers.Flatten(),\n",
+        "    layers.Dense(64, activation='relu'),\n",
+        "    layers.Dense(10, activation='softmax')\n",
+        "])\n",
+        "\n",
+        "model.compile(optimizer='adam',\n",
+        "              loss='sparse_categorical_crossentropy',\n",
+        "              metrics=['accuracy'])\n",
+        "\n",
+        "model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))\n",
+        "model.save(\"mnist_cnn.h5\")\n",
+        "\"\"\"\n",
+        "\n",
+        "with open(f\"{project_path}/train_model.py\", \"w\") as f:\n",
+        "    f.write(train_code)"
+      ],
+      "metadata": {
+        "id": "GcG8FBo-jcef"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!python /content/Handwritten-Digit-Recognition-System/train_model.py"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "kbwL0-zkjebm",
+        "outputId": "fb709bce-3b12-41a7-fdef-b53d0e19f0e1"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "2026-05-07 17:48:20.923065: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n",
+            "2026-05-07 17:48:21.084176: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.\n",
+            "To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.\n",
+            "Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz\n",
+            "\u001b[1m11490434/11490434\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 0us/step\n",
+            "/usr/local/lib/python3.12/dist-packages/keras/src/layers/convolutional/base_conv.py:113: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.\n",
+            "  super().__init__(activity_regularizer=activity_regularizer, **kwargs)\n",
+            "2026-05-07 17:48:27.603529: E external/local_xla/xla/stream_executor/cuda/cuda_platform.cc:51] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: UNKNOWN ERROR (303)\n",
+            "Epoch 1/5\n",
+            "\u001b[1m1875/1875\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m56s\u001b[0m 29ms/step - accuracy: 0.9565 - loss: 0.1434 - val_accuracy: 0.9829 - val_loss: 0.0503\n",
+            "Epoch 2/5\n",
+            "\u001b[1m1875/1875\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m53s\u001b[0m 28ms/step - accuracy: 0.9857 - loss: 0.0479 - val_accuracy: 0.9878 - val_loss: 0.0365\n",
+            "Epoch 3/5\n",
+            "\u001b[1m1875/1875\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m82s\u001b[0m 29ms/step - accuracy: 0.9891 - loss: 0.0338 - val_accuracy: 0.9870 - val_loss: 0.0377\n",
+            "Epoch 4/5\n",
+            "\u001b[1m1875/1875\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m82s\u001b[0m 28ms/step - accuracy: 0.9917 - loss: 0.0252 - val_accuracy: 0.9867 - val_loss: 0.0408\n",
+            "Epoch 5/5\n",
+            "\u001b[1m1875/1875\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m53s\u001b[0m 28ms/step - accuracy: 0.9940 - loss: 0.0180 - val_accuracy: 0.9888 - val_loss: 0.0331\n",
+            "WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!mv mnist_cnn.h5 /content/Handwritten-Digit-Recognition-System/"
+      ],
+      "metadata": {
+        "id": "ZY27FFCdmrVS"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "app_code = \"\"\"\n",
+        "import streamlit as st\n",
+        "import numpy as np\n",
+        "from PIL import Image, ImageOps\n",
+        "import tensorflow as tf\n",
+        "\n",
+        "model = tf.keras.models.load_model(\"mnist_cnn.h5\")\n",
+        "\n",
+        "st.title(\"Handwritten Digit Recognition (CNN + MNIST)\")\n",
+        "st.write(\"Upload your own handwritten digit image\")\n",
+        "\n",
+        "uploaded_file = st.file_uploader(\"Choose an image...\", type=[\"png\",\"jpg\",\"jpeg\"])\n",
+        "\n",
+        "def preprocess_image(image):\n",
+        "    image = ImageOps.grayscale(image)\n",
+        "    image = image.resize((28,28))\n",
+        "    image = np.array(image)\n",
+        "    image = image / 255.0\n",
+        "    image = image.reshape(1,28,28,1)\n",
+        "    return image\n",
+        "\n",
+        "if uploaded_file is not None:\n",
+        "    img = Image.open(uploaded_file)\n",
+        "    st.image(img, caption=\"Uploaded Image\", use_column_width=True)\n",
+        "\n",
+        "    processed = preprocess_image(img)\n",
+        "    prediction = model.predict(processed)\n",
+        "    digit = np.argmax(prediction)\n",
+        "\n",
+        "    st.success(f\"Predicted Digit: {digit}\")\n",
+        "\"\"\"\n",
+        "\n",
+        "with open(f\"{project_path}/app.py\", \"w\") as f:\n",
+        "    f.write(app_code)"
+      ],
+      "metadata": {
+        "id": "4zjpjrsYmxEy"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "req = \"\"\"streamlit\n",
+        "tensorflow\n",
+        "numpy\n",
+        "pillow\n",
+        "\"\"\"\n",
+        "with open(f\"{project_path}/requirements.txt\", \"w\") as f:\n",
+        "    f.write(req)"
+      ],
+      "metadata": {
+        "id": "Sbw-ccXrm1Ac"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "readme = \"\"\"\n",
+        "# Handwritten Digit Recognition System\n",
+        "\n",
+        "CNN trained on MNIST with a Streamlit GUI to upload your own handwritten digit images.\n",
+        "\n",
+        "## Run\n",
+        "pip install -r requirements.txt\n",
+        "streamlit run app.py\n",
+        "\"\"\"\n",
+        "with open(f\"{project_path}/README.md\", \"w\") as f:\n",
+        "    f.write(readme)"
+      ],
+      "metadata": {
+        "id": "J3csg8i9m3wN"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!zip -r Handwritten-Digit-Recognition-System.zip /content/Handwritten-Digit-Recognition-System"
+      ],
+      "metadata": {
+        "id": "fh5-EDTUm6h1",
+        "outputId": "8b2814b5-34ed-4411-941d-b4c6bd5738cb",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "  adding: content/Handwritten-Digit-Recognition-System/ (stored 0%)\n",
+            "  adding: content/Handwritten-Digit-Recognition-System/train_model.py (deflated 55%)\n",
+            "  adding: content/Handwritten-Digit-Recognition-System/README.md (deflated 24%)\n",
+            "  adding: content/Handwritten-Digit-Recognition-System/requirements.txt (deflated 3%)\n",
+            "  adding: content/Handwritten-Digit-Recognition-System/mnist_cnn.h5 (deflated 8%)\n",
+            "  adding: content/Handwritten-Digit-Recognition-System/app.py (deflated 48%)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "files.download(\"Handwritten-Digit-Recognition-System.zip\")"
+      ],
+      "metadata": {
+        "id": "Fh28Ga53m83J",
+        "outputId": "46aa5dc0-9966-4e24-adfb-58caee73cb27",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 17
+        }
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Javascript object>"
+            ],
+            "application/javascript": [
+              "\n",
+              "    async function download(id, filename, size) {\n",
+              "      if (!google.colab.kernel.accessAllowed) {\n",
+              "        return;\n",
+              "      }\n",
+              "      const div = document.createElement('div');\n",
+              "      const label = document.createElement('label');\n",
+              "      label.textContent = `Downloading \"${filename}\": `;\n",
+              "      div.appendChild(label);\n",
+              "      const progress = document.createElement('progress');\n",
+              "      progress.max = size;\n",
+              "      div.appendChild(progress);\n",
+              "      document.body.appendChild(div);\n",
+              "\n",
+              "      const buffers = [];\n",
+              "      let downloaded = 0;\n",
+              "\n",
+              "      const channel = await google.colab.kernel.comms.open(id);\n",
+              "      // Send a message to notify the kernel that we're ready.\n",
+              "      channel.send({})\n",
+              "\n",
+              "      for await (const message of channel.messages) {\n",
+              "        // Send a message to notify the kernel that we're ready.\n",
+              "        channel.send({})\n",
+              "        if (message.buffers) {\n",
+              "          for (const buffer of message.buffers) {\n",
+              "            buffers.push(buffer);\n",
+              "            downloaded += buffer.byteLength;\n",
+              "            progress.value = downloaded;\n",
+              "          }\n",
+              "        }\n",
+              "      }\n",
+              "      const blob = new Blob(buffers, {type: 'application/binary'});\n",
+              "      const a = document.createElement('a');\n",
+              "      a.href = window.URL.createObjectURL(blob);\n",
+              "      a.download = filename;\n",
+              "      div.appendChild(a);\n",
+              "      a.click();\n",
+              "      div.remove();\n",
+              "    }\n",
+              "  "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.Javascript object>"
+            ],
+            "application/javascript": [
+              "download(\"download_2e67fc96-ed08-4287-b6f7-63113f539aa1\", \"Handwritten-Digit-Recognition-System.zip\", 1387325)"
+            ]
+          },
+          "metadata": {}
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMuGPLKsrYKZwg+zuUrNeQH",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
